@@ -1,0 +1,21 @@
+{
+  "name": "cool-parser",
+  "version": "0.0.1",
+  "description": "A cool question parser",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c rollup.config.dev.js --watch",
+    "test": "jest"
+  },
+  "files": [
+    "cool-parser.js"
+  ],
+  "repository": "git@github.com:shoppingzh/cool-parser.git",
+  "author": "shoppingzh <1049262057@qq.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-multi-entry": "^4.1.0",
+    "jest": "^27.4.3"
+  }
+}

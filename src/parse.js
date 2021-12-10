@@ -19,19 +19,19 @@ export function parseScore(str) {
 }
 
 /**
+ * 解析难易度
+ * @param {String} str
+ */
+ export function parseDifficulty(str) {
+  return find(str, new RegExp(`${EXP_KEYS.DIFFICULTY}(.*)`), 1)
+}
+
+/**
  * 解析试题解析
  * @param {String} str 
  */
 export function parseAnalyse(str) {
   return find(str, new RegExp(`${EXP_KEYS.ANALYSE}(.*)`), 2)
-}
-
-/**
- * 解析难易度
- * @param {String} str
- */
-export function parseDifficulty(str) {
-  return find(str, new RegExp(`${EXP_KEYS.DIFFICULTY}(.*)`), 1)
 }
 
 /**
@@ -46,6 +46,24 @@ export function parseChoiceContent(str) {
  * 解析题干序号
  * @param {String} str 
  */
-export function parseStermOrder(str) {
+export function parseStemOrder(str) {
   return findContext(str, new RegExp(`^${EXP_KEYS.STEM_ORDER}`), 1)
+}
+
+/**
+ * 解析题干中的题型
+ * @param {String} str 
+ * @returns 
+ */
+export function parseStemType(str) {
+  return findContext(str, new RegExp(`\\s*${EXP_KEYS.TYPE}\\s*$`), 1)
+}
+
+/**
+ * 解析题干中的正确答案
+ * @param {String} str 
+ * @returns 
+ */
+export function parseStemCorrectAnswer(str) {
+  return findContext(str, new RegExp(`[(（](.*)?[)）]`), 1)
 }

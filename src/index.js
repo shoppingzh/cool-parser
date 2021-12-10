@@ -1,7 +1,8 @@
 import { TYPES, DIFFICULTY, EXP_KEYS } from './consts'
 import { readLines } from './utils/string'
 import { containsImgTag, isSettings, isCorrectAnswerSettings, isScoreSettings, isDifficultySettings, isAnalyseSettings } from './validator'
-import { parseCorrectAnswer, parseScore, parseDifficulty, parseAnalyse, removeStemOrder, parseSterm, parseStermOrder } from './parse'
+import { parseCorrectAnswer, parseScore, parseDifficulty, parseAnalyse, parseStemOrder, parseStemType, parseStemCorrectAnswer } from './parse'
+import { covertType } from './coverter'
 
 class ParseContext {
   constructor() {
@@ -23,14 +24,44 @@ export default class Parser {
   constructor(content) {
     this.content = content
     this.context = new ParseContext()
+    this.errors = []
   }
 
-  _parseSterm() {
-    let content = this.contentArea
-    readLines(content, (line, index) => {
+  _parseStem() {
+    this.stem = {
+      order: null,
+      inner: '',
+      correctAnswer: null,
+      type: null
+    }
+    
+    readLines(this.contentArea, (line, index) => {
       if (index > 0) {
+        this.stem.inner += line
         return
       }
+      let content = line
+      const orderResult = parseStemOrder(content)
+      if (orderResult) {
+        content = orderResult.tail
+        this.stem.order = parseInt(orderResult.current)
+      }
+      const typeResult = parseStemType(content)
+      if (typeResult) {
+        const type = covertType(typeResult.current)
+        if (type != null) {
+          content = typeResult.head
+          this.stem.type = type
+        } else {
+          this.errors.push('试题类型错误')
+        }
+      }
+      const answerResult = parseStemCorrectAnswer(content)
+      if (answerResult) {
+        content = answerResult.head + answerResult.tail
+        this.stem.correctAnswer = answerResult.current
+      }
+      this.stem.inner += content
     })
   }
   
@@ -51,7 +82,7 @@ export default class Parser {
       if (index > 0 && !containsImgTag(line)) return true
       this.contentArea += line
     })
-    this._parseSterm()
+    this._parseStem()
 
     readLines(this.content, (line, index) => {
       settingsStartLine = index

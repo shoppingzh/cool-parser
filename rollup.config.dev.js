@@ -3,7 +3,9 @@ export default {
   input: [
     'src/index.js',
     'src/parse.js',
-    'src/validator.js'
+    'src/validator.js',
+    'src/coverter.js',
+    'src/consts.js'
   ],
   output: {
     dir: 'dist',

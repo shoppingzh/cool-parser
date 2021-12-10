@@ -15,3 +15,18 @@ export function readLines(text = '', cb, from, to) {
     if (cb(line, i, lines)) break
   }
 }
+
+/**
+ * 判断字符串是否满足对比字符串或正则表达式
+ * @param {String} str 原字符串
+ * @param {String|RegExp} rule 字符串或正则表达式
+ */
+export function match(str, rule) {
+  if (typeof rule === 'string') {
+    return str.trim() === rule
+  }
+  if (typeof rule === 'object' && rule.test) {
+    return rule.test(str)
+  }
+  return false
+}

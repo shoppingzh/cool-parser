@@ -4,7 +4,7 @@
   "description": "A cool question parser",
   "main": "index.js",
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup -c --watch",
     "dev": "rollup -c rollup.config.dev.js --watch",
     "test": "jest"
   },

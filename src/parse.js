@@ -1,11 +1,13 @@
-import { find } from './utils/regexp'
+import { find, exec, findContext } from './utils/regexp'
+import { EXP_KEYS } from './consts'
+import { readLines } from './utils/string'
 
 /**
  * 解析正确答案
  * @param {String} str 输入字符串
  */
 export function parseCorrectAnswer(str) {
-  return find(/(正确)?答案\s*[:：]\s*(.*)/, str, 2)
+  return find(str, new RegExp(`${EXP_KEYS.CORRECT_ANSWER}(.*)`), 2)
 }
 
 /**
@@ -13,7 +15,7 @@ export function parseCorrectAnswer(str) {
  * @param {String} str
  */
 export function parseScore(str) {
-  return find(/分[值数]\s*[:：]\s*(\d+)/, str, 1)
+  return find(str, new RegExp(`${EXP_KEYS.SCORE}(\\d+)`), 1)
 }
 
 /**
@@ -21,7 +23,7 @@ export function parseScore(str) {
  * @param {String} str 
  */
 export function parseAnalyse(str) {
-  return find(/(试题)?[解分]析\s*[:：](.*)/, str, 2)
+  return find(str, new RegExp(`${EXP_KEYS.ANALYSE}(.*)`), 2)
 }
 
 /**
@@ -29,5 +31,21 @@ export function parseAnalyse(str) {
  * @param {String} str
  */
 export function parseDifficulty(str) {
-  return find(/难易?度\s*[:：](.*)/, str, 1)
+  return find(str, new RegExp(`${EXP_KEYS.DIFFICULTY}(.*)`), 1)
+}
+
+/**
+ * 解析选择题选项
+ * @param {String} str 
+ */
+export function parseChoiceContent(str) {
+  return find(str, /^[A-Za-z1-9]\s*[、\.]\s*(.*)/, 1)
+}
+
+/**
+ * 解析题干序号
+ * @param {String} str 
+ */
+export function parseStermOrder(str) {
+  return findContext(str, new RegExp(`^${EXP_KEYS.STEM_ORDER}`), 1)
 }

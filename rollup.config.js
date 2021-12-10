@@ -3,7 +3,7 @@ export default {
   output: {
     file: 'cool-parser.js',
     format: 'umd',
-    name: 'CollParser'
+    name: 'CoolParser'
   },
   watch: {
     buildDelay: 500

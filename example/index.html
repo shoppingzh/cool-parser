@@ -1,0 +1,41 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    textarea {
+      width: 600px;
+      height: 400px;
+    }
+  </style>
+</head>
+<body>
+
+  <textarea placeholder="输入试题内容..">
+    1.已知a^2+b^2=5^2，符合条件的a，b值有：(A) [单选题]
+    A、3，4
+    B. 3，3
+    C、4，4
+    D、2，6
+    解析：勾股定理，3-4-5
+    难度 ：   中
+    分值：5
+
+  </textarea>
+  <div>
+    <button id="analyseBtn">解析</button>
+  </div>
+
+  <script src="../cool-parser.js"></script>
+  <script>
+    const textarea = document.querySelector('textarea')
+    document.querySelector('#analyseBtn').addEventListener('click', () => {
+      const parser = new CoolParser(textarea.value)
+      parser.parse()
+      console.log(parser)
+    })
+  </script>
+  
+</body>
+</html>

@@ -15,7 +15,7 @@ export function containsImgTag(str) {
  */
 export function isCorrectAnswerSettings(str) {
   return testSome(str, [
-    new RegExp(`^${EXP_KEYS.CORRECT_ANSWER}`)
+    new RegExp(`^${EXP_KEYS.CORRECT_ANSWER_HEAD}`)
   ])
 }
 
@@ -25,7 +25,7 @@ export function isCorrectAnswerSettings(str) {
  */
 export function isScoreSettings(str) {
   return testSome(str, [
-    new RegExp(`^${EXP_KEYS.SCORE}`)
+    new RegExp(`^${EXP_KEYS.SCORE_HEAD}`)
   ])
 }
 
@@ -35,7 +35,7 @@ export function isScoreSettings(str) {
  */
 export function isDifficultySettings(str) {
   return testSome(str, [
-    new RegExp(`^${EXP_KEYS.DIFFICULTY}`)
+    new RegExp(`^${EXP_KEYS.DIFFICULTY_HEAD}`)
   ])
 }
 
@@ -45,7 +45,7 @@ export function isDifficultySettings(str) {
  */
 export function isAnalyseSettings(str) {
   return testSome(str, [
-    new RegExp(`^${EXP_KEYS.ANALYSE}`)
+    new RegExp(`^${EXP_KEYS.ANALYSE_HEAD}`)
   ])
 }
 
@@ -55,4 +55,42 @@ export function isAnalyseSettings(str) {
  */
 export function isSettings(str) {
   return [isCorrectAnswerSettings, isScoreSettings, isDifficultySettings, isAnalyseSettings].some(func => func(str))
+}
+
+/**
+ * 是否是正常分数
+ * @param {String} value 
+ */
+export function isNormalScore(value) {
+  return value && value > 0
+}
+
+/**
+ * 是否为选择题选项
+ * @param {String} str 
+ */
+export function isChoiceOption(str) {
+  return testSome(str, [
+    new RegExp(`^${EXP_KEYS.CHOICE_OPTION_ORDER_HEAD}`)
+  ])
+}
+
+/**
+ * 是否为连线题选项行
+ * @param {String} str 
+ */
+export function isMatchOption(str) {
+  return testSome(str, [
+    new RegExp(`^${EXP_KEYS.CHOICE_OPTION_ORDER_HEAD}.*?${EXP_KEYS.CHOICE_OPTION_ORDER_HEAD}.+$`)
+  ])
+}
+
+/**
+ * 是否为简答题的答案项
+ * @param {String} str 
+ */
+export function isAnswerOption(str) {
+  return testSome(str, [
+    new RegExp(`^${EXP_KEYS.ANSWER_OPTION_HEAD}`)
+  ])
 }

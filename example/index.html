@@ -21,6 +21,7 @@
     解析：勾股定理，3-4-5
     难度 ：   中
     分值：5
+    正确答案：B
 
   </textarea>
   <div>
@@ -31,9 +32,8 @@
   <script>
     const textarea = document.querySelector('textarea')
     document.querySelector('#analyseBtn').addEventListener('click', () => {
-      const parser = new CoolParser(textarea.value)
-      parser.parse()
-      console.log(parser)
+      const result = CoolParser.parse(textarea.value)
+      console.log(result)
     })
   </script>
   

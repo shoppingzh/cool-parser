@@ -16,10 +16,12 @@ export const DIFFICULTY = {
 }
 
 export const EXP_KEYS = {
-  CORRECT_ANSWER: '\\s*(正确)?答案\\s*[:：]\\s*', // 正确答案
-  ANALYSE: '\\s*(试题)?[解分]析\\s*[:：]\\s*', // 解析
-  SCORE: '\\s*分[值数]\\s*[:：]\\s*', // 分数
-  DIFFICULTY: '\\s*难易?度\\s*[:：]\\s*', // 难易度
-  STEM_ORDER: '\\s*(\\d+)[.、,，]\\s*', // 题干序号
-  TYPE: '[\\[【]\\s*(\\S+)\\s*[\\]】]' // 试题类型
+  CORRECT_ANSWER_HEAD: '\\s*(正确)?答案\\s*[:：]\\s*', // 正确答案开头
+  ANALYSE_HEAD: '\\s*(试题)?[解分]析\\s*[:：]\\s*', // 解析开头
+  SCORE_HEAD: '\\s*分[值数]\\s*[:：]\\s*', // 分数开头
+  DIFFICULTY_HEAD: '\\s*难易?度\\s*[:：]\\s*', // 难易度开头
+  STEM_ORDER_HEAD: '\\s*(\\d+)[.、,，]\\s*', // 题干序号开头
+  TYPE: '[\\[【]\\s*(\\S+)\\s*[\\]】]', // 试题类型
+  CHOICE_OPTION_ORDER_HEAD: '\\s*([A-Za-z1-9])\\s*[、\\.]\\s*', // 选择题选项序号开头
+  ANSWER_OPTION_HEAD: '\\s*(普通|核心)\\s*关键词\\s*[:：]' // 简答题关键词开头
 }

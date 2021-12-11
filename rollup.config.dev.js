@@ -4,7 +4,7 @@ export default {
     'src/index.js',
     'src/parse.js',
     'src/validator.js',
-    'src/coverter.js',
+    'src/converter.js',
     'src/consts.js'
   ],
   output: {

@@ -94,6 +94,13 @@ export default class Parser {
     this.errors = []
   }
 
+  _log(description, level) {
+    this.errors.push({
+      description,
+      level
+    })
+  }
+
   _parseAreas() {
     this.blocks = {
       stem: '',
@@ -150,7 +157,7 @@ export default class Parser {
           content = typeResult.content
           this.stem.type = type
         } else {
-          this.errors.push('试题类型错误')
+          this._log('试题类型错误')
         }
       }
       const answerResult = parseStemCorrectAnswer(content)
@@ -178,7 +185,7 @@ export default class Parser {
         if (isNormalScore(score)) {
           this.settings.score = score
         } else {
-          this.errors.push('请输入正确分值（可为小数，但不允许为负数）')
+          this._log('请输入正确分值（可为小数，但不允许为负数）')
         }
       }
       if (isDifficultySettings(line)) {
@@ -186,7 +193,7 @@ export default class Parser {
         if (difficulty != null) {
           this.settings.difficulty = difficulty
         } else {
-          this.errors.push('请输入正确的难易度')
+          this._log('请输入正确的难易度')
         }
       }
       if (isAnalyseSettings(line)) {
@@ -233,13 +240,13 @@ export default class Parser {
     // 选择题（单选/多选/排序/连线）选项为空校验
     if ([TYPES.SINGLE_CHOICE, TYPES.MULTIPLE_CHOICE, TYPES.SORT, TYPES.MATCH].indexOf(type) >= 0) {
       if (!this.main.options || !this.main.options) {
-        this.errors.push('选项为空')
+        this._log('选项为空')
       }
     }
     // 答案为空校验
     if ([TYPES.SINGLE_CHOICE, TYPES.MULTIPLE_CHOICE, TYPES.JUDGMENT, TYPES.ORDER_FILL, TYPES.UNORDER_FILL,
       TYPES.SORT, TYPES.MATCH].indexOf(type) >= 0 && !answer) {
-      this.errors.push('没有设置答案')
+      this._log('没有设置答案')
     }
     // 选择题（单选/多选/排序/连线）答案是否与选项匹配校验
     if ([TYPES.SINGLE_CHOICE, TYPES.MULTIPLE_CHOICE].indexOf(type) >= 0 && answer) {
@@ -247,7 +254,7 @@ export default class Parser {
       const orders = options.map(o => o.order)
       answerItems.forEach(answerItem => {
         if (orders.indexOf(answerItem) < 0) {
-          this.errors.push(`正确答案有误：选项${answerItem}不存在`)
+          this._log(`正确答案有误：选项${answerItem}不存在`)
         }
       })
     }

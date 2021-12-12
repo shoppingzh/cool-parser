@@ -39,7 +39,11 @@ export function parseAnalyse(str) {
  * @param {String} str 
  */
 export function parseStemOrder(str) {
-  return findContext(str, new RegExp(`^${EXP_KEYS.STEM_ORDER_HEAD}`), 1)
+  const result = findContext(str, new RegExp(`^${EXP_KEYS.STEM_ORDER_HEAD}`), 1)
+  return result ? {
+    order: result.current,
+    content: result.tail
+  } : null
 }
 
 /**
@@ -48,7 +52,11 @@ export function parseStemOrder(str) {
  * @returns 
  */
 export function parseStemType(str) {
-  return findContext(str, new RegExp(`\\s*${EXP_KEYS.TYPE}\\s*$`), 1)
+  const result = findContext(str, new RegExp(`\\s*${EXP_KEYS.TYPE}\\s*$`), 1)
+  return result ? {
+    type: result.current,
+    content: result.head
+  } : null
 }
 
 /**
@@ -57,7 +65,12 @@ export function parseStemType(str) {
  * @returns 
  */
 export function parseStemCorrectAnswer(str) {
-  return findContext(str, new RegExp(`[(（](.+)?[)）]`), 1)
+  const result = findContext(str, new RegExp(`[(（](.+)[)）]`), 1)
+  return result ? {
+    answer: result.current,
+    head: result.head,
+    tail: result.tail
+  } : null
 }
 
 /**
@@ -105,7 +118,7 @@ export function parseMatchLine(line) {
  * 解析简答题答案行
  * @param {String} str 
  */
-export function parseAnswerLine(str) {
+export function parseAnswerAnswerLine(str) {
   const result = findContext(str, new RegExp(`${EXP_KEYS.ANSWER_OPTION_HEAD}`), 0)
   if (!result) return null
   const type = result.current.indexOf('普通') >= 0 ? 0 : 1

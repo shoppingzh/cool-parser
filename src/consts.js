@@ -25,3 +25,13 @@ export const EXP_KEYS = {
   CHOICE_OPTION_ORDER_HEAD: '\\s*([A-Za-z1-9])\\s*[、\\.]\\s*', // 选择题选项序号开头
   ANSWER_OPTION_HEAD: '\\s*(普通|核心)\\s*关键词\\s*[:：]' // 简答题关键词开头
 }
+
+// 判断题的选项
+export const JUDGMENT_OPTIONS = [
+  ['是', '否'],
+  ['对', '错'],
+  ['有', '无'],
+  ['可以', '不可以'],
+  // 英文
+  ['true', 'false']
+]

@@ -1,5 +1,5 @@
 import { testSome } from './utils/regexp'
-import { EXP_KEYS } from './consts'
+import { EXP_KEYS, JUDGMENT_OPTIONS } from './consts'
 
 /**
  * 判断字符串中是否含有<img>标签
@@ -92,5 +92,26 @@ export function isMatchOption(str) {
 export function isAnswerOption(str) {
   return testSome(str, [
     new RegExp(`^${EXP_KEYS.ANSWER_OPTION_HEAD}`)
+  ])
+}
+
+/**
+ * 是否为判断题的选项
+ * @param {String} str 
+ */
+export function isJudgmentOption(str) {
+  return str ? JUDGMENT_OPTIONS.reduce((all, options) => {
+    all.push(...options)
+    return all
+  }, []).indexOf(str.trim()) >= 0 : false
+}
+
+/**
+ * 是否为排序题的答案
+ * @param {String} str 
+ */
+export function isSortAnswer(str) {
+  return testSome(str, [
+    /^\s*[A-Za-z1-9](\s*[,，]\s*[A-Za-z1-9])+$/
   ])
 }

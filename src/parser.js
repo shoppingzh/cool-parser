@@ -1,21 +1,26 @@
-import { TYPES, DIFFICULTY, EXP_KEYS } from './consts'
+import { TYPES, DIFFICULTY, EXP_KEYS, JUDGMENT_OPTIONS } from './consts'
 import { readLines, splitLines } from './utils/string'
-import { containsImgTag, isSettings, isCorrectAnswerSettings, isScoreSettings, isDifficultySettings, isAnalyseSettings, isNormalScore, isChoiceOption, isMatchOption, isAnswerOption } from './validator'
+import { containsImgTag, isSettings, isCorrectAnswerSettings, isScoreSettings, isDifficultySettings, isAnalyseSettings, isNormalScore, isChoiceOption, isMatchOption, isAnswerOption, isJudgmentOption, isSortAnswer } from './validator'
 import { parseCorrectAnswer, parseScore, parseDifficulty, parseAnalyse, parseStemOrder, parseStemType, parseStemCorrectAnswer, parseChoiceOption, parseMatchLine, parseAnswerAnswerLine, parseFillAnswerLine } from './parse'
 import { convertType, convertDifficulty } from './converter'
 
 /**
  * 根据选项/答案区的第一行推导题型
- * @param {String} str 
+ * 1. 带有选项且不为连线题选项，则为选择题（单选、多选、排序）
+ * 2. 带有选项且为连线题选项，则为连线题
+ * 3. 带有简答题答案，则为简答题
+ * 4. 答案区不为空，则为填空题
+ * 5. 答案区为空，则为简答题或判断题
+ * @param {String} line 
  * @returns 
  */
-function guessType(str) {
-  if (isChoiceOption(str)) {
-    if (isMatchOption(str)) return TYPES.MATCH
+function guessType(line) {
+  if (isChoiceOption(line)) {
+    if (isMatchOption(line)) return TYPES.MATCH
     return TYPES.SINGLE_CHOICE
   }
-  if (isAnswerOption(str)) return TYPES.ANSWER
-  return TYPES.UNORDER_FILL
+  if (isAnswerOption(line)) return TYPES.ANSWER
+  return line ? TYPES.UNORDER_FILL : TYPES.ANSWER
 }
 
 /**
@@ -88,13 +93,22 @@ function parseFillAnswer(lines) {
   return answer
 }
 
+/**
+ * 根据判断题答案获取选项列表
+ * @param {String} answer 
+ */
+function getJudgmentOptions(answer) {
+  return JUDGMENT_OPTIONS.find(o => o.indexOf(answer) >= 0)
+}
+
 export default class Parser {
   constructor(content) {
     this.content = content
     this.errors = []
+    console.log(this)
   }
 
-  _log(description, level) {
+  _log(description, level = 0) {
     this.errors.push({
       description,
       level
@@ -224,41 +238,82 @@ export default class Parser {
 
   
   generateQuestion() {
-    const type = this.stem.type || this.main.type || TYPES.ANSWER
-    const answer = this.settings.answer || this.stem.answer || this.main.answer
-    const options = this.main.options
-    let convertAnswer = null
-    if ([TYPES.SINGLE_CHOICE, TYPES.MULTIPLE_CHOICE].indexOf(type) >= 0) {
-      convertAnswer = answer.split('')
-    } else if ([TYPES.JUDGMENT].indexOf(type) >= 0) {
-      // TODO:
-    } else if ([TYPES.SORT, TYPES.MATCH].indexOf(type) >= 0) {
-      convertAnswer = answer.split(/[,，]/)
-    } else if ([TYPES.ORDER_FILL, TYPES.UNORDER_FILL, TYPES.ANSWER].indexOf(type) >= 0) {
-      convertAnswer = answer
+    let type = this.stem.type || this.main.type || TYPES.ANSWER // 题干区的题型优先级最高，其次采用识别题型
+    let options = this.main.options // 选项列表(单选/多选/判断/排序/连线)
+    let answer = this.settings.answer || this.stem.answer // 设置区的答案优先级最高，其次才用题干中的答案
+    let convertAnswer = this.main.answer // 根据答案区解析出的转换后的答案(填空/简答)
+    // 1. 矫正题型：识别的题型可能有误，根据多种角度对题型进行矫正
+    // 1.3 多选题(识别为单选题且存在多个答案的)
+    if (type === TYPES.SINGLE_CHOICE && answer.split(/\s*/).length > 1) {
+      type = TYPES.MULTIPLE_CHOICE
     }
-    // 选择题（单选/多选/排序/连线）选项为空校验
-    if ([TYPES.SINGLE_CHOICE, TYPES.MULTIPLE_CHOICE, TYPES.SORT, TYPES.MATCH].indexOf(type) >= 0) {
-      if (!this.main.options || !this.main.options) {
-        this._log('选项为空')
+    // 1.2 判断题(没有识别为选择题、填空题、排序题、连线题的，且答案中带有判断题选项的)
+    if ([TYPES.SINGLE_CHOICE, TYPES.MULTIPLE_CHOICE, TYPES.ORDER_FILL, TYPES.UNORDER_FILL, TYPES.SORT, TYPES.MATCH].indexOf(this.main.type) < 0) {
+      const judgmentOptions = getJudgmentOptions(answer)
+      if (judgmentOptions && judgmentOptions.length) {
+        type = TYPES.JUDGMENT
+        options = [
+          { content: judgmentOptions[0], value: true },
+          { content: judgmentOptions[1], value: false }
+        ]
+        convertAnswer = answer === judgmentOptions[0]
       }
     }
-    // 答案为空校验
-    if ([TYPES.SINGLE_CHOICE, TYPES.MULTIPLE_CHOICE, TYPES.JUDGMENT, TYPES.ORDER_FILL, TYPES.UNORDER_FILL,
-      TYPES.SORT, TYPES.MATCH].indexOf(type) >= 0 && !answer) {
-      this._log('没有设置答案')
+    // 1.3 排序题(识别为选择题，但答案符合排序题答案规则)
+    if ([TYPES.SINGLE_CHOICE, TYPES.MULTIPLE_CHOICE].indexOf(type) >= 0 && isSortAnswer(answer)) {
+      type = TYPES.SORT
     }
-    // 选择题（单选/多选/排序/连线）答案是否与选项匹配校验
-    if ([TYPES.SINGLE_CHOICE, TYPES.MULTIPLE_CHOICE].indexOf(type) >= 0 && answer) {
-      const answerItems = answer.split('')
-      const orders = options.map(o => o.order)
-      answerItems.forEach(answerItem => {
-        if (orders.indexOf(answerItem) < 0) {
-          this._log(`正确答案有误：选项${answerItem}不存在`)
+
+    // 2. 处理选项
+    // TODO:
+
+    // 3. 处理正确答案
+    if (type === TYPES.SINGLE_CHOICE || type === TYPES.MULTIPLE_CHOICE) {
+      convertAnswer = answer.split(/\s*/)
+    } else if (type === TYPES.JUDGMENT) {
+      // 已处理
+    } else if (type === TYPES.ORDER_FILL || type === TYPES.UNORDER_FILL) {
+      // 已处理
+    } else if (type === TYPES.SORT) {
+      convertAnswer = answer.split(/\s*[,，]\s*/)
+    } else if (type === TYPES.MATCH) {
+      const parts = answer.split(/\s*[,，]\s*/)
+      convertAnswer = parts.reduce((answer, part) => {
+        const leftRight = part.split(/\s*-\s*/)
+        answer[leftRight[0]] = leftRight[1]
+        return answer
+      }, {})
+    } else if (type === TYPES.ANSWER) {
+      // 已处理
+    }
+
+    // 4. 校验试题完整性
+    // 4.1 是否设置选项
+    if ([TYPES.SINGLE_CHOICE, TYPES.MULTIPLE_CHOICE, TYPES.JUDGMENT, TYPES.SORT, TYPES.MATCH].indexOf(type) >= 0) {
+      if (!options || !options.length) {
+        this._log('没有设置选项')
+        this.options = []
+      }
+    }
+    // 4.2 选项是否过多或过少
+    // TODO:
+    // 4.3 是否设置答案
+    if ([TYPES.SINGLE_CHOICE, TYPES.MULTIPLE_CHOICE, TYPES.JUDGMENT, TYPES.ORDER_FILL, TYPES.UNORDER_FILL, TYPES.SORT, TYPES.MATCH].indexOf(type) >= 0) {
+      if (convertAnswer == null) {
+        this._log('没有设置答案')
+      }
+    }
+    // 4.4 答案与选项是否匹配
+    if ([TYPES.SINGLE_CHOICE, TYPES.MULTIPLE_CHOICE, TYPES.SORT].indexOf(type) >= 0 && convertAnswer != null && options) {
+      convertAnswer.forEach(item => {
+        if (options.findIndex(o => o.order === item) < 0) {
+          this._log(`答案${item}与选项不匹配`)
         }
       })
     }
-    // TODO: 更多情况
+    // 4.5 答案是否过多或过少
+    // TODO:
+
     const question = {
       type,
       stem: this.stem.content,

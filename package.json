@@ -2,7 +2,7 @@
   "name": "cool-parser",
   "version": "0.0.1",
   "description": "A cool question parser",
-  "main": "index.js",
+  "main": "cool-parser.js",
   "scripts": {
     "build": "rollup -c --watch",
     "dev": "rollup -c rollup.config.dev.js --watch",
@@ -17,5 +17,8 @@
   "devDependencies": {
     "@rollup/plugin-multi-entry": "^4.1.0",
     "jest": "^27.4.3"
+  },
+  "publishConfig": {
+    "registry": "http://192.168.1.33:8081/repository/npm-hosted/"
   }
 }

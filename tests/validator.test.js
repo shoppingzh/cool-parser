@@ -48,7 +48,7 @@ test('是否是判断题选项', () => {
 })
 
 test('是否为判断题选项（行）', () => {
-  expect(isJudgmentOption('行')).toBe(false)
+  expect(isJudgmentOption('行')).toBe(true)
 })
 
 test('是否为排序题的答案', () => {

@@ -32,6 +32,7 @@ export const JUDGMENT_OPTIONS = [
   ['对', '错'],
   ['有', '无'],
   ['可以', '不可以'],
+  ['行', '不行'],
   // 英文
   ['true', 'false']
 ]

@@ -65,7 +65,7 @@ export function parseStemType(str) {
  * @returns 
  */
 export function parseStemCorrectAnswer(str) {
-  const result = findContext(str, new RegExp(`[(（](.+)[)）]`), 1)
+  const result = findContext(str, new RegExp(`[(（]\\s*([^)）]+)\\s*[)）]$`), 1)
   return result ? {
     answer: result.current,
     head: result.head,

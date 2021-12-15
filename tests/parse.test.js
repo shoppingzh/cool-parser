@@ -1,4 +1,4 @@
-const { parseCorrectAnswer, parseScore, parseChoiceOption, parseDifficulty, parseAnalyse } = require('../dist/parse')
+const { parseCorrectAnswer, parseScore, parseChoiceOption, parseDifficulty, parseAnalyse, parseStemCorrectAnswer } = require('../dist/parse')
 
 test('解析试题答案（正常情况）', () => {
   expect(parseCorrectAnswer('正确答案：A')).toBe('A')
@@ -56,4 +56,12 @@ test('解析选择题选项（A、使用其他车辆行驶证）', () => {
     order: 'A',
     content: '使用其他车辆行驶证'
   })
+})
+
+
+// ========= 题干区 =============
+
+test('解析题干区正确答案', () => {
+  const result = parseStemCorrectAnswer('中国古代讲究“同姓不婚”。已知春秋时秦晋两国世为婚姻（故称两姓联姻为“喜结秦晋之好”），而鲁晋两国不可通婚，结合所学关于“西周分封制”的知识，能够判断（ACD）')
+  result && (expect(result.answer).toBe('ACD'))
 })

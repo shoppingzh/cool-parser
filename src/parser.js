@@ -269,13 +269,13 @@ export default class Parser {
 
     // 3. 处理正确答案
     if (type === TYPES.SINGLE_CHOICE || type === TYPES.MULTIPLE_CHOICE) {
-      convertAnswer = answer.split(/\s*/)
+      convertAnswer = answer.split(/\s*/).filter(o => o && o.trim())
     } else if (type === TYPES.JUDGMENT) {
       // 已处理
     } else if (type === TYPES.ORDER_FILL || type === TYPES.UNORDER_FILL) {
       // 已处理
     } else if (type === TYPES.SORT) {
-      convertAnswer = answer.split(/\s*[,，]\s*/)
+      convertAnswer = answer.split(/\s*[,，]\s*/).filter(o => o && o.trim())
     } else if (type === TYPES.MATCH) {
       const parts = answer.split(/\s*[,，]\s*/)
       convertAnswer = parts.reduce((answer, part) => {

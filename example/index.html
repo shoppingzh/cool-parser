@@ -4,15 +4,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
-    textarea {
+    .editor {
       width: 600px;
       height: 400px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      outline: none;
+    }
+    .editor:focus {
+      border-color: orange;
     }
   </style>
 </head>
 <body>
 
-  <textarea placeholder="输入试题内容..">
+  <pre class="editor" contenteditable placeholder="输入试题内容..">
     1.已知a^2+b^2=5^2，符合条件的a，b值有：(A) [单选题]
     A、3，4
     B. 3，3
@@ -23,16 +30,16 @@
     分值：5
     正确答案：B
 
-  </textarea>
-  <div>
+  </pre>
+  <div style="margin-top: 20px;">
     <button id="analyseBtn">解析</button>
   </div>
 
   <script src="../cool-parser.js"></script>
   <script>
-    const textarea = document.querySelector('textarea')
+    const textarea = document.querySelector('.editor')
     document.querySelector('#analyseBtn').addEventListener('click', () => {
-      const result = CoolParser.parse(textarea.value)
+      const result = CoolParser.parse(textarea.innerHTML)
       console.log(result)
     })
   </script>

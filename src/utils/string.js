@@ -3,7 +3,7 @@
  * @param {String} text 内容文本
  */
 export function splitLines(text = '', num = 1) {
-  return text.replaceAll('\r\n', '\n').split(new RegExp(`\\n{${num},}`))
+  return text.replace(/\r\n/g, '\n').split(new RegExp(`\\n{${num},}`))
 }
 
 /**
